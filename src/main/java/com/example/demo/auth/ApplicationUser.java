@@ -1,63 +1,35 @@
 package com.example.demo.auth;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import lombok.Data;
+import javax.persistence.*;
+import java.io.Serializable;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
-public class ApplicationUser implements UserDetails {
-    private final Set<? extends GrantedAuthority> grantedAuthority;
+@Data
+@Entity
+@Table(name = "TBL_APPLICATION_USER", schema = "OPR")
+public class ApplicationUser implements Serializable {
 
-    private final String password;
-    private final String userName;
-    private final boolean isAccountNonExpired;
-    private final boolean isAccountNonLocked;
-    private final boolean isCredentialsNonExpired;
-    private final boolean isEnabled;
+    @Id
+    private Long id;
 
-    public ApplicationUser(String userName,String password,Set<? extends GrantedAuthority> grantedAuthority, boolean isAccountNonExpired, boolean isAccountNonLocked, boolean isCredentialsNonExpired, boolean isEnabled) {
-        this.password = password;
-        this.userName = userName;
-        this.grantedAuthority=grantedAuthority;
-        this.isAccountNonExpired = isAccountNonExpired;
-        this.isAccountNonLocked = isAccountNonLocked;
-        this.isCredentialsNonExpired = isCredentialsNonExpired;
-        this.isEnabled = isEnabled;
-    }
+    private  String password;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return grantedAuthority;
-    }
+    @Column(name = "USER_NAME")
+    private  String userName;
 
-    @Override
-    public String getPassword() {
-        return password;
-    }
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "TBL_USER_ROLES",joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<ApplicationUserRole> roles;
 
-    @Override
-    public String getUsername() {
-        return userName;
-    }
+    private  boolean isAccountNonExpired;
+    private  boolean isAccountNonLocked;
+    private  boolean isCredentialsNonExpired;
+    private  boolean isEnabled;
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return isAccountNonExpired;
-    }
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return isAccountNonLocked;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return isCredentialsNonExpired;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return isEnabled;
-    }
 }

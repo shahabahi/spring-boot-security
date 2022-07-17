@@ -1,59 +1,39 @@
 package com.example.demo.auth;
 
-import com.google.common.collect.Lists;
+import com.example.demo.repository.OprUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-
-import static com.example.demo.security.ApplicationUserRole.*;
-@Repository("fake")
+@Service
 public class ApplicationUserDaoService implements ApplicationUserDao {
     private final PasswordEncoder passwordEncoder;
 
+    public final OprUserRepository userRepository;
+
     @Autowired
-    public ApplicationUserDaoService(PasswordEncoder passwordEncoder) {
+    public ApplicationUserDaoService(PasswordEncoder passwordEncoder, OprUserRepository userRepository) {
         this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
     }
 
     @Override
-    public Optional<ApplicationUser> selectApplicationUserByUserName(String userName) {
-        return getApplicationUsers()
-                .stream()
-                .filter(applicationUser ->userName.equals(applicationUser.getUsername()))
-                .findFirst();
+    public ApplicationUser selectApplicationUserByUserName(String userName) {
+        return getApplicationUser(userName);
     }
 
-    private List<ApplicationUser> getApplicationUsers() {
-        List<ApplicationUser> applicationUsers = Lists.newArrayList(new ApplicationUser(
-                        "Shahab",
-                        passwordEncoder.encode("A123"),
-                        STUDENT.getGrantedAuthority(),
-                        true,
-                        true,
-                        true,
-                        true
-                ),
-                new ApplicationUser(
-                        "Ali",
-                        passwordEncoder.encode("A123"),
-                        ADMIN.getGrantedAuthority(),
-                        true,
-                        true,
-                        true,
-                        true
-                ),
-                new ApplicationUser(
-                        "Kamran",
-                        passwordEncoder.encode("A123"),
-                        ADMINTRAINEE.getGrantedAuthority(),
-                        true,
-                        true,
-                        true,
-                        true
-                ));
-        return applicationUsers;
+    private ApplicationUser getApplicationUser(String userName) {
+        ApplicationUser applicationUser=  userRepository.findByUserName(userName);
+
+//        Optional<ApplicationUser> applicationUser = Optional.of(new ApplicationUser(
+//                "Shahab",
+//                passwordEncoder.encode("A123"),
+//                STUDENT.getGrantedAuthority(),
+//                true,
+//                true,
+//                true,
+//                true
+//        ));
+        return applicationUser;
     }
 }
