@@ -20,18 +20,24 @@ public class ApplicationUserService implements UserDetailsService {
     }
 
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-     ApplicationUser applicationUser= applicationUserDao.selectApplicationUserByUserName(userName);
-     if (applicationUser == null) throw new UsernameNotFoundException(userName);
-     List<GrantedAuthority> authorities = getUserAuthority(applicationUser.getRoles());
-     return buildUserForAuthentication(applicationUser,authorities);
+        ApplicationUser applicationUser = applicationUserDao.selectApplicationUserByUserName(userName);
+        if (applicationUser == null) throw new UsernameNotFoundException(userName);
+        List<GrantedAuthority> authorities = getUserAuthority(applicationUser.getRoles());
+        return buildUserForAuthentication(applicationUser, authorities);
     }
+
     private UserDetails buildUserForAuthentication(ApplicationUser user, List<GrantedAuthority> authorities) {
         return new org.springframework.security.core.userdetails.User(user.getUserName(), user.getPassword(), authorities);
     }
+
     private List<GrantedAuthority> getUserAuthority(Set<ApplicationUserRole> userRoles) {
         Set<GrantedAuthority> roles = new HashSet<>();
         userRoles.forEach((role) -> {
-            roles.add(new SimpleGrantedAuthority(role.getRole()));
+            if (role.getRole().contains(":")) {
+                roles.add(new SimpleGrantedAuthority(role.getRole()));
+            } else {
+                roles.add(new SimpleGrantedAuthority("ROLE_" + role.getRole()));
+            }
         });
 
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>(roles);

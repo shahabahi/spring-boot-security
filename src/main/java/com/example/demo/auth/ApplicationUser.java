@@ -1,6 +1,8 @@
 package com.example.demo.auth;
 
 import lombok.Data;
+import org.springframework.security.core.GrantedAuthority;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -24,6 +26,7 @@ public class ApplicationUser implements Serializable {
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "TBL_USER_ROLES",joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
+
     private Set<ApplicationUserRole> roles;
 
     private  boolean isAccountNonExpired;
